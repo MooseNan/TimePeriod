@@ -7,8 +7,15 @@
 //
 
 #import "AppDelegate.h"
-
+#import "TPDatabase.h"
+#import "HomeViewController.h"
+#import "UIColor+CreateMethod.h"
+BMKMapManager* _mapManager;
 @interface AppDelegate ()
+{
+    
+}
+
 
 @end
 
@@ -16,7 +23,35 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    [[UIApplication sharedApplication]setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    
+    UINavigationBar *bar = [UINavigationBar appearance];
+    [bar setBackgroundImage:[UIImage imageNamed:@"navi.png"] forBarMetrics:UIBarMetricsDefault];
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+    
+    
+    [[TPDatabase shareDB] createDB];
+    NSLog(@"沙盒路径：%@",NSHomeDirectory());
+    
+    _mapManager = [[BMKMapManager alloc]init];
+    // 如果要关注网络及授权验证事件，请设定     generalDelegate参数
+    BOOL ret = [_mapManager start:@"Q1fiLaO0ONhLvd9Vda9VGD5Yswpvggkf"  generalDelegate:nil];
+    if (!ret) {
+        NSLog(@"manager start failed!");
+    }
+    // Add the navigation controller's view to the wi
+    self.window=[[UIWindow alloc]init];
+    self.window.frame=[UIScreen mainScreen].bounds;
+    //self.navController=[[UINavigationController alloc]init];
+    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+    NSString *name = [userDefault objectForKey:@"name"];
+    NSString *token=[userDefault objectForKey:@"token"];
+
+        HomeViewController *mainVC=[[HomeViewController alloc]init];
+        self.navController=[[UINavigationController alloc]initWithRootViewController:mainVC];
+        self.window.rootViewController=self.navController;
+
+    [self.window makeKeyAndVisible];
     return YES;
 }
 
